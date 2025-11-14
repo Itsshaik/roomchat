@@ -1,0 +1,34 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Join Room - SecureChat{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen px-4">
+    <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Join Room</h1>
+        <h2 class="text-2xl text-indigo-600 mb-6">{{ room.name }}</h2>
+        
+        <div class="mb-6 p-4 bg-indigo-50 rounded-lg">
+            <p class="text-sm text-gray-700"><strong>Created by:</strong> {{ room.created_by.username }}</p>
+            <p class="text-sm text-gray-700"><strong>Created:</strong> {{ room.created_at|date:"M d, Y" }}</p>
+        </div>
+        
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Enter Room Password</label>
+                <input type="password" name="password" id="password" required 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+            </div>
+            
+            <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-200">
+                Join Room
+            </button>
+        </form>
+        
+        <a href="{% url 'chat:room_list' %}" class="block text-center text-indigo-600 hover:text-indigo-700 mt-4">
+            Back to Rooms
+        </a>
+    </div>
+</div>
+{% endblock %}

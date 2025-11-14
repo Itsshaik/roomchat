@@ -1,0 +1,106 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}{{ room.name }} - SecureChat{% endblock %}
+
+{% block content %}
+<div class="h-screen flex flex-col">
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 shadow-lg">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">{{ room.name }}</h1>
+                <p class="text-sm opacity-90">End-to-end encrypted</p>
+            </div>
+            <div class="flex gap-2">
+                <a href="{% url 'chat:leave_room' room.id %}" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition duration-200">
+                    Leave Room
+                </a>
+                <a href="{% url 'chat:room_list' %}" class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition duration-200">
+                    All Rooms
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="flex-1 overflow-hidden bg-gradient-to-br from-indigo-50 to-purple-50">
+        <div class="max-w-6xl mx-auto h-full flex flex-col py-4 px-4">
+            <div id="chat-messages" class="flex-1 overflow-y-auto bg-white rounded-xl shadow-lg p-6 mb-4 space-y-3">
+                {% for message in messages %}
+                <div class="{% if message.sender == user.username %}text-right{% endif %}">
+                    <div class="inline-block max-w-xs lg:max-w-md">
+                        <p class="text-xs text-gray-500 mb-1">{{ message.sender }}</p>
+                        <div class="{% if message.sender == user.username %}bg-indigo-600 text-white{% else %}bg-gray-200 text-gray-800{% endif %} px-4 py-2 rounded-lg">
+                            {{ message.content }}
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">{{ message.timestamp|date:"h:i A" }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <div class="flex gap-2">
+                    <input type="text" id="message-input" placeholder="Type your message..." 
+                           class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    <button id="send-button" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-200">
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const roomId = {{ room.id }};
+    const username = "{{ user.username }}";
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const chatSocket = new WebSocket(
+        protocol + '//' + window.location.host + '/ws/chat/' + roomId + '/'
+    );
+    
+    const messagesDiv = document.getElementById('chat-messages');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const messageDiv = document.createElement('div');
+        const isCurrentUser = data.username === username;
+        
+        messageDiv.className = isCurrentUser ? 'text-right' : '';
+        messageDiv.innerHTML = `
+            <div class="inline-block max-w-xs lg:max-w-md">
+                <p class="text-xs text-gray-500 mb-1">${data.username}</p>
+                <div class="${isCurrentUser ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-800'} px-4 py-2 rounded-lg">
+                    ${data.message}
+                </div>
+                <p class="text-xs text-gray-400 mt-1">Just now</p>
+            </div>
+        `;
+        
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    };
+    
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (message) {
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': username
+            }));
+            messageInput.value = '';
+        }
+    }
+    
+    sendButton.onclick = sendMessage;
+    
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+</script>
+{% endblock %}

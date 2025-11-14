@@ -25,18 +25,22 @@ SECRET_KEY = 'django-insecure-4l5(#jq%5-is!k9w3y!w1%lm$$b!_dtwg9-014@g1rgcno9#_%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
+    'accounts',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +71,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'secureChat.wsgi.application'
+ASGI_APPLICATION = 'secureChat.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 
 # Database
@@ -120,3 +131,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'chat:room_list'
+LOGOUT_REDIRECT_URL = 'accounts:login'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'

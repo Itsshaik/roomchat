@@ -1,0 +1,55 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Chat Rooms - SecureChat{% endblock %}
+
+{% block content %}
+<div class="min-h-screen py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-2xl p-8">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-800">Chat Rooms</h1>
+                    <p class="text-gray-600 mt-1">Welcome, {{ user.username }}!</p>
+                </div>
+                <a href="{% url 'accounts:logout' %}" class="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition duration-200">
+                    Logout
+                </a>
+            </div>
+            
+            <div class="mb-8 bg-gradient-to-r from-indigo-50 to-purple-50 p-6 rounded-xl">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Create New Room</h2>
+                <form method="post" action="{% url 'chat:create_room' %}" class="flex gap-4">
+                    {% csrf_token %}
+                    <input type="text" name="room_name" placeholder="Room name" required class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    <input type="password" name="room_password" placeholder="Room password" required class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500">
+                    <button type="submit" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-2 rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition duration-200">
+                        Create
+                    </button>
+                </form>
+            </div>
+            
+            <div>
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Available Rooms</h2>
+                {% if rooms %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for room in rooms %}
+                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-xl border-2 border-indigo-100 hover:border-indigo-300 transition duration-200">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">{{ room.name }}</h3>
+                        <p class="text-sm text-gray-600 mb-1">Created by: {{ room.created_by.username }}</p>
+                        <p class="text-sm text-gray-500 mb-4">{{ room.created_at|date:"M d, Y" }}</p>
+                        <a href="{% url 'chat:join_room' room.id %}" class="block text-center bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-200">
+                            Join Room
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-12 bg-gray-50 rounded-xl">
+                    <p class="text-gray-500 text-lg">No rooms available. Create one to get started!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
