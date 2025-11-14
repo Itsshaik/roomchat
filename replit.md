@@ -57,10 +57,13 @@ secureChat/
 2. **Message**: Encrypted messages with room, sender, encrypted content, and timestamp
 
 ### Security Features
-- Password protection for all chat rooms
-- Fernet symmetric encryption for all messages
-- Session-based room access control
-- Encrypted key stored in .encryption_key file (excluded from git)
+- **Password Protection**: All chat rooms require password authentication
+- **Hashed Passwords**: Room passwords are hashed using Django's make_password/check_password
+- **WebSocket Authentication**: WebSocket connections verify authenticated users and session-based room access
+- **Server-side Identity**: Username is enforced server-side (self.scope['user']) to prevent spoofing
+- **Message Encryption**: Fernet symmetric encryption for all messages stored in database
+- **Session-based Access Control**: Room access tracked in user sessions
+- **Encrypted Key Storage**: Encryption key stored in .encryption_key file (excluded from git)
 
 ### Encryption
 Messages are encrypted using the cryptography library's Fernet symmetric encryption:
@@ -72,10 +75,14 @@ Messages are encrypted using the cryptography library's Fernet symmetric encrypt
 - **Nov 14, 2025**: Initial project setup with all core features
   - Created Django project with Channels support
   - Implemented user authentication system
-  - Built password-protected room system
-  - Added real-time WebSocket messaging
+  - Built password-protected room system with hashed passwords
+  - Added real-time WebSocket messaging with authentication
   - Integrated Fernet encryption for messages
   - Designed modern UI with Tailwind CSS
+  - Fixed critical security issues:
+    * WebSocket authentication and room access verification
+    * Hashed room passwords (Django make_password/check_password)
+    * Server-side username enforcement (no client spoofing)
 
 ## How to Use
 
