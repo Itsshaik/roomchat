@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from .models import Room, Message
 from .encryption import encrypt_message, decrypt_message
@@ -25,7 +26,7 @@ def create_room(request):
         
         room = Room.objects.create(
             name=room_name,
-            password=room_password,
+            password=make_password(room_password),
             created_by=request.user
         )
         
@@ -45,7 +46,7 @@ def join_room(request, room_id):
     if request.method == 'POST':
         password = request.POST.get('password')
         
-        if password == room.password:
+        if check_password(password, room.password):
             request.session[f'room_{room_id}_access'] = True
             messages.success(request, f'Welcome to {room.name}!')
             return redirect('chat:chat_room', room_id=room_id)

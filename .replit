@@ -5,3 +5,35 @@ expertMode = true
 [nix]
 channel = "stable-25_05"
 packages = ["cargo", "libiconv", "libxcrypt", "openssl", "pkg-config", "rustc"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "SecureChat Server"
+
+[[workflows.workflow]]
+name = "SecureChat Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "daphne -b 0.0.0.0 -p 5000 secureChat.asgi:application"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 41987
+externalPort = 3000

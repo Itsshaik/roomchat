@@ -86,8 +86,7 @@
         const message = messageInput.value.trim();
         if (message) {
             chatSocket.send(JSON.stringify({
-                'message': message,
-                'username': username
+                'message': message
             }));
             messageInput.value = '';
         }
