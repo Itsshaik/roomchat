@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,6 +27,11 @@ SECRET_KEY = 'django-insecure-4l5(#jq%5-is!k9w3y!w1%lm$$b!_dtwg9-014@g1rgcno9#_%
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.replit.dev',
+    'https://*.repl.co',
+]
 
 
 # Application definition
