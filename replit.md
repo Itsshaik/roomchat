@@ -93,21 +93,37 @@ Messages are encrypted using the cryptography library's Fernet symmetric encrypt
 4. **Join Room**: Click on a room and enter its password
 5. **Chat**: Send encrypted messages in real-time
 
+### Admin Panel
+- **URL**: `/admin/`
+- **Features**:
+  - View all rooms and messages
+  - See encryption status (🔐 ENCRYPTED indicator)
+  - Decrypt and view message content
+  - Room password protection status (🔒 Protected)
+  - Search and filter messages by room or user
+
 ### For Developers
 - **Run Server**: Workflow "SecureChat Server" runs: `daphne -b 0.0.0.0 -p 5000 secureChat.asgi:application`
+- **Redis Server**: Workflow "Redis Server" runs: `redis-server --port 6000`
 - **Migrations**: `python manage.py makemigrations && python manage.py migrate`
 - **Create Superuser**: `python manage.py createsuperuser`
 
 ## Workflow Configuration
-- **Name**: SecureChat Server
-- **Command**: `daphne -b 0.0.0.0 -p 5000 secureChat.asgi:application`
-- **Port**: 5000
-- **Type**: Webview (accessible via browser)
+1. **Redis Server**
+   - **Command**: `redis-server --port 6000`
+   - **Port**: 6000
+   - **Type**: Console (background service)
+   
+2. **SecureChat Server**
+   - **Command**: `daphne -b 0.0.0.0 -p 5000 secureChat.asgi:application`
+   - **Port**: 5000
+   - **Type**: Webview (accessible via browser)
 
 ## Environment
 - Python 3.11
 - Django 5.2.8
-- Channel layers: In-memory (for MVP, can upgrade to Redis for production)
+- Redis 7.2.10 (running on port 6000)
+- Channel layers: Redis (production-ready)
 
 ## User Preferences
 None specified yet.
